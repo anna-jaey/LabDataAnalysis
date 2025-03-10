@@ -1,9 +1,9 @@
 project:
   type: website
-  output-dir: _site
+  output-dir: docs
 
 website:
-  title: "Reproducible Data Analysis"
+  title: "Wet lab data analysis"
   navbar:
     left:
       - href: index.qmd

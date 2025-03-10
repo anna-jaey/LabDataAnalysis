@@ -1,0 +1,16 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Wet lab data analysis",
+    "section": "",
+    "text": "This site provides example analysis workflows for commonly used assays in the biological wet lab. Originally created for my students, I’m sharing it here so others can benefit as well. It’s a work in progress.\nEach section walks through the key steps of data analysis, from raw data to final results, highlighting important quality control measures and potential pitfalls.The focus is on understanding the logic of data analysis and providing a starting point that can be adapted to different experiments. The workflows are written in R, feel free to use and modify the code :) However, you should be able to follow and adapt, whether or not you use R."
+  },
+  {
+    "objectID": "index.html#available-pipelines",
+    "href": "index.html#available-pipelines",
+    "title": "Wet lab data analysis",
+    "section": "Available Pipelines",
+    "text": "Available Pipelines\n\nColorimetric Data Analysis (e.g., ELISA, MTT assays)\n\nqPCR Analysis (e.g., Ct values, normalization)"
+  }
+]

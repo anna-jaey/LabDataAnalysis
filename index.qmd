@@ -1,5 +1,5 @@
 ---
-title: "Reproducible wet lab data analysis"
+title: "Wet lab data analysis"
 author: "Anna"
 date: today
 format: html
