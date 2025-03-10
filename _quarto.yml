@@ -8,9 +8,9 @@ website:
     left:
       - href: index.qmd
         text: "Home"
-      - href: colorimetric.qmd
+      - href: colourimetric.qmd
         text: "Colorimetric Data"
-      - href: qpcr.qmd
+      - href: qPCR.qmd
         text: "qPCR Data"
 
 format:

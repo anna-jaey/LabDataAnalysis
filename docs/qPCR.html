@@ -6,10 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Anna">
-<meta name="dcterms.date" content="2025-03-10">
 
-<title>Wet lab data analysis</title>
+<title>qPCR Data Analysis – Wet lab data analysis</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -90,7 +88,7 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
@@ -98,7 +96,7 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">Colorimetric Data</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./qPCR.html"> 
+    <a class="nav-link" href="./qpcr.qmd"> 
 <span class="menu-text">qPCR Data</span></a>
   </li>  
 </ul>
@@ -117,11 +115,7 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#welcome" id="toc-welcome" class="nav-link active" data-scroll-target="#welcome">Welcome</a></li>
-  <li><a href="#general-steps" id="toc-general-steps" class="nav-link" data-scroll-target="#general-steps">General Steps</a>
-  <ul class="collapse">
-  <li><a href="#available-pipelines" id="toc-available-pipelines" class="nav-link" data-scroll-target="#available-pipelines">Available Pipelines</a></li>
-  </ul></li>
+  <li><a href="#qpcr" id="toc-qpcr" class="nav-link active" data-scroll-target="#qpcr">qPCR</a></li>
   </ul>
 </nav>
     </div>
@@ -130,26 +124,14 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Wet lab data analysis</h1>
+<h1 class="title">qPCR Data Analysis</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Anna </p>
-          </div>
-  </div>
     
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">March 10, 2025</p>
-    </div>
-  </div>
   
     
   </div>
@@ -159,57 +141,11 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="welcome" class="level1">
-<h1>Welcome</h1>
-<p>This site provides example analysis workflows for commonly used assays in the biological wet lab. Originally created for my students, I’m sharing it here so others can benefit as well. It’s a work in progress.</p>
-<p>Each section walks through the key steps of data analysis, from raw data to final results, highlighting important quality control measures and potential pitfalls.The focus is on understanding the logic of data analysis and providing a starting point that can be adapted to different experiments. The workflows are written in R, feel free to use and modify the code :) However, you should be able to follow and adapt, whether or not you use R.</p>
-</section>
-<section id="general-steps" class="level1">
-<h1>General Steps</h1>
-<ul>
-<li>Inspect raw data &amp; perform QC
-<ul>
-<li>Is the data within the expected range?</li>
-<li>Are there any obvious outliers?</li>
-<li><em>An empty well due to a pipetting mistake should be immediately visible</em></li>
-</ul></li>
-<li>Identify and handle outliers
-<ul>
-<li>Do you have a valid reason to exclude a data point?</li>
-<li>Use lab notes or experimental context to justify exclusions.</li>
-</ul></li>
-<li>Perform necessary preprocessing
-<ul>
-<li>Background subtraction, normalisation</li>
-<li>Is it necessary for your data?</li>
-<li>Why and how should it be done?</li>
-</ul></li>
-<li>Graph your data meaningfully
-<ul>
-<li>Consider who your are showing your results to (colleague, final report, publication)</li>
-<li>Select a meaningful graph type that fits your data</li>
-<li>Make clear what you show: pipetting replicates vs.&nbsp;biological replicates, how many replicates?</li>
-<li>Axis labels, clear legends and annotations</li>
-</ul></li>
-<li>Statistical analysis: Are differences meaningful?
-<ul>
-<li>Descriptive stats: Mean, standard deviation, confidence intervals</li>
-<li>Hypothesis testing: t-tests, ANOVA, non-parametric tests—which is appropriate?
-<ul>
-<li>Multiple comparisons: If comparing many groups, adjust for false positives (e.g., Bonferroni, Tukey)</li>
-</ul></li>
-</ul></li>
-</ul>
-<section id="available-pipelines" class="level2">
-<h2 class="anchored" data-anchor-id="available-pipelines">Available Pipelines</h2>
-<ul>
-<li><strong>Colorimetric Data Analysis</strong> (e.g., ELISA, MTT assays)<br>
-</li>
-<li><strong>qPCR Analysis</strong> (e.g., Ct values, normalization)</li>
-</ul>
+<section id="qpcr" class="level1">
+<h1>qPCR</h1>
+<p>[in progress]</p>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
