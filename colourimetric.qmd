@@ -1,0 +1,247 @@
+---
+title: "Colourimetric Data Analysis"
+format: html
+---
+
+# Colourimetric data without a 'standard curve'
+This workflow is for experiments, where we don't have a 'standard curve' or calibration curve, that is a serial dilution of known concentrations. Instead, we rely on **relative comparisons** between experimental groups. 
+
+## **Setup**
+First, load the necessary libraries.
+```{r setup, message=FALSE, warning=FALSE}
+library(tidyverse)
+```
+
+## **1) Raw Data and Quality Control**
+Load the raw data:
+```{r}
+colourimetric_df <- read.csv("example_data/colorimetric_example_tidy.csv")
+
+glimpse(colourimetric_df)
+```
+The example data set are absorbance values, the raw values from the plate reader. This example dataset contains data for three different experiments, four treatment groups. For each experiment and each group there are three technical replicates (pipetting replicates). There is also three "blank" measurements for each group, that is the assay buffer without a sample. A "blank" is a control that contains all assay components except the analyte of interest (e.g. the buffer but no cells), used to measure background absorbance and correct for non-specific signal.
+
+### **Check for missing values**
+```{r}
+summary(colourimetric_df)
+```
+Any missing values should be examined to determine if they result from experimental errors. There are no missing values in the example data.
+
+### **Visualising Raw Data**
+To see the distribution of absorbance values across different groups and experiments, plot:
+
+```{r}
+ylimit <- max(colourimetric_df$Absorbance)*1.1 # use the max absorbance value for upper y limit
+ggplot(colourimetric_df, aes(x=Group, y=Absorbance, colour=Experiment, shape=as.factor(Replicate))) +
+  geom_point(position = position_dodge(0.3)) +
+  stat_summary(aes(group = Experiment),
+               fun = mean,
+               fun.min = function(x) mean(x) - sd(x),
+               fun.max = function(x) mean(x) + sd(x),
+               geom = "pointrange", size = 1, shape = 18,
+               colour = 'darkgrey', alpha = 0.75,
+               position = position_dodge(0.3)) +
+  labs(color = 'Experiment', shape = 'Replicate') +
+  scale_y_continuous(limits = c(0, ylimit))+
+  theme_minimal() +
+  theme(legend.position = 'bottom')
+```
+Graphing one point for each data point, using colours and shapes to distinguish between the experiments and the technical replicates. 
+QC check: data falls within the linear range of the assay (in the example the linear range is between 0.1 and 1).
+
+## **2) Handling Outliers and Exclusions**
+In the graph above, we can see that **Experiment 1, Group 3, Replicate 3** has an absorbance value similar to the blank readings. We have to determine if this is a real reading or if data collection errors such as pipetting mistakes have occured. In the example, we confirm with our "lab notes" that this well might not have been properly pipetted, and we exclude it:
+
+```{r exclude}
+colourimetric_df <- colourimetric_df %>% 
+  filter(!(Experiment == "Exp1" & Group == "Group3" & Replicate == 3))
+```
+
+We replot the data:
+```{r}
+ylimit <- max(colourimetric_df$Absorbance)*1.1 # use the max absorbance value for upper y limit
+ggplot(colourimetric_df, aes(x=Group, y=Absorbance, colour=Experiment, shape=as.factor(Replicate))) +
+  geom_point(position = position_dodge(0.3)) +
+  stat_summary(aes(group = Experiment),
+               fun = mean,
+               fun.min = function(x) mean(x) - sd(x),
+               fun.max = function(x) mean(x) + sd(x),
+               geom = "pointrange", size = 1, shape = 18,
+               colour = 'darkgrey', alpha = 0.75,
+               position = position_dodge(0.3)) +
+  scale_y_continuous(limits = c(0, ylimit))+
+  labs(color = 'Experiment', shape = 'Replicate') +
+  theme_minimal() +
+  theme(legend.position = 'bottom')
+```
+and we see that the exclusion worked as expected.
+This outlier is removed based on documented lab notes confirming a technical issue. Excluding data without a valid reason is cherry-picking and is not scientifically sound.
+
+## **3) Background Correction: Subtracting Blank Values**
+### Is it necessary?
+**It depends.**
+
+- If you are interested in absolute absorbance values - yes.
+- If there is significant background noise and it is also different between the plates (experiments), it can better to subtract the mean blank value per experiment to correct for plate inconsistencies. However, if you see inconsistencies between plates that you wouldn't expect, (there is no technical reason for it), you should check your experimental set-up.
+- If the blank values are consistently low, there is minimal drift, and you are interested in relative comparisons between groups (or interpolating agains standard curve), subtraction may not be necessary.
+
+For the example, we can try both:
+
+```{r}
+blank_means <- colourimetric_df %>%
+  filter(Group == "Blank") %>%
+  group_by(Experiment) %>%
+  summarise(BlankMean = mean(Absorbance))
+
+colourimetric_df <- colourimetric_df %>%
+  left_join(blank_means, by = "Experiment") %>%
+  mutate(Absorbance_Corrected = Absorbance - BlankMean) %>%
+  filter(Group != "Blank")  # Remove blank values now that we have subtracted
+```
+
+## **4) Averaging Technical Replicates**
+Each experiment contains **technical replicates**, which we average to obtain a single value per group per experiment.
+As we try with and without subtracting the blank reading, we average both.
+
+```{r}
+colourimetric_df_meantechnical <- colourimetric_df %>%  
+  group_by(Experiment, Group) %>%
+  summarise(AbsorbanceMeanCorrected = mean(Absorbance_Corrected),
+            AbsorbanceSDCorrected = sd(Absorbance_Corrected),
+            AbsorbanceMean = mean(Absorbance),
+            AbsorbanceSD = sd(Absorbance)
+            )
+```
+
+## **5) Normalisation**
+To compare across experiments, we normalise all values relative to the **control group** (Group 1) within each experiment:
+As we try with and without subtracting the blank reading, we do it for both.
+```{r}
+colourimetric_df_Normalised <- colourimetric_df_meantechnical %>%  
+  group_by(Experiment) %>%
+  mutate(Normalised = AbsorbanceMean / AbsorbanceMean[Group == 'Group1'],
+         NormalisedCorrected = AbsorbanceMeanCorrected / AbsorbanceMeanCorrected[Group == 'Group1'])
+```
+
+## **6) Summarising across Biological Replicates**
+
+To report results, we show the data point for each biological replicate as well as the mean and standard deviation.
+
+```{r}
+#| layout-ncol: 2
+#| fig-cap: 
+#|   - "Absorbance value fold change (FC) to Group 1"
+#|   - "Absorbance value fold change (FC) to Group 1 after subtracting the blank reading"
+
+ylimit <- max(colourimetric_df_Normalised$Normalised)*1.1
+ggplot(colourimetric_df_Normalised, aes(x=Group, y=Normalised)) +
+  geom_point(position = position_dodge(0.3)) +
+  stat_summary(
+               fun = mean,
+               fun.min = function(x) mean(x) - sd(x), 
+               fun.max = function(x) mean(x) + sd(x), 
+               geom = "pointrange", size = 1, shape = 18,
+               colour = 'darkgrey', alpha = 0.75,
+               position = position_dodge(0.3)) +
+  scale_y_continuous(limits = c(0, ylimit))+
+  labs(y='FC to Group 1')+
+  theme_minimal() +
+  theme(legend.position = 'bottom')
+
+ylimit <- max(colourimetric_df_Normalised$NormalisedCorrected)*1.1
+ggplot(colourimetric_df_Normalised, aes(x=Group, y=NormalisedCorrected)) +
+  geom_point(position = position_dodge(0.3)) +
+  stat_summary(
+               fun = mean,
+               fun.min = function(x) mean(x) - sd(x), 
+               fun.max = function(x) mean(x) + sd(x), 
+               geom = "pointrange", size = 1, shape = 18,
+               colour = 'darkgrey', alpha = 0.75,
+               position = position_dodge(0.3)) +
+  scale_y_continuous(limits = c(0, ylimit))+
+  labs(y='FC to Group 1')+
+  theme_minimal() +
+  theme(legend.position = 'bottom')
+```
+
+The graph above displays the fold change relative to Group 1. Key observations:
+- Since Group 1 is the normalisation reference for each experiment, the mean value is always **1**, and the standard deviation is **0**,
+- When fold changes are less than, a standard y-axis can be misleading. Consider using a **log2 transformation** for clearer visualisation.
+
+```{r}
+#| layout-ncol: 2
+#| fig-cap: 
+#|   - "log2 FC of absorbance Values to Group 1"
+#|   - "log2 FC of absorbance Values to Group 1 after subtracting the blank reading"
+
+ylimit <- max(colourimetric_df_Normalised$AbsorbanceMean)*1.1
+ggplot(colourimetric_df_Normalised, aes(x=Group, y=log2(Normalised))) +
+  geom_point(position = position_dodge(0.3)) +
+  stat_summary(
+               fun = mean,
+               fun.min = function(x) mean(x) - sd(x), 
+               fun.max = function(x) mean(x) + sd(x), 
+               geom = "pointrange", size = 1, shape = 18,
+               colour = 'darkgrey', alpha = 0.75,
+               position = position_dodge(0.3)) +
+  #scale_y_continuous(limits = c(0, log2(ylimit)))+
+  labs(y='log 2 FC to Group 1')+
+  theme_minimal() +
+  theme(legend.position = 'bottom')
+
+ylimit <- max(colourimetric_df_Normalised$AbsorbanceMeanCorrected)*1.1
+ggplot(colourimetric_df_Normalised, aes(x=Group, y=log2(NormalisedCorrected))) +
+  geom_point(position = position_dodge(0.3)) +
+  stat_summary(
+               fun = mean,
+               fun.min = function(x) mean(x) - sd(x), 
+               fun.max = function(x) mean(x) + sd(x), 
+               geom = "pointrange", size = 1, shape = 18,
+               colour = 'darkgrey', alpha = 0.75,
+               position = position_dodge(0.3)) +
+  #scale_y_continuous(limits = c(0, log2(ylimit)))+
+  labs(y='log 2 FC to Group 1')+
+  theme_minimal() +
+  theme(legend.position = 'bottom')
+```
+***Subtracting "blank" readings**
+
+Let's look at the values:
+
+```{r}
+colourimetric_df_Normalised %>% group_by(Group) %>%
+  summarise(FC.mean = mean(Normalised),
+            FC.sd = sd(Normalised),
+            FC.blanksubtract.mean = mean(NormalisedCorrected),
+            FC.blanksubstract.sd = sd(NormalisedCorrected))
+```
+* Group 1 (reference "control" group): 
+   - Before and after blank subtraction, the mean fold change remains exactly **1**, with **zero variance**.  
+   - This confirms that normalisation was performed correctly.  
+
+* Groups 2-4:
+   - The mean fold changes are **very similar** before and after blank subtraction.  
+   - Standard deviations change slightly.  
+
+- **If the blank values were significantly contributing to absorbance variation**, we would expect a larger shift in mean values and a reduction in standard deviations after subtraction.  
+- Here, the changes are **small**, suggesting that the blank readings did not introduce much noise in this example dataset.  
+
+- **Should we subtract the blank?**  
+- If blank values are consistent and small, subtraction **may not be necessary** as it makes little difference.  
+- If blanks show **high variability**, subtraction is essential to remove systematic errors.  
+- A good approach is to **check both** to see robustness.
+
+
+---
+## **QC checkpoints & Considerations**
+- *Raw data*
+  - Does it fall within expected range of the assay (linear range)? 
+  - Are there outliers? - If yes, deal with them appropriately. 
+- **Is blank subtraction necessary?**
+  - It depends.
+  - If in doubt, try both.
+- **Normalisation choice:**
+  - Always normalise to a control that is expected to remain stable.
+  - Normalisation should reduce systematic technical noise while maintaining the true biological differences between groups.
+- **Visual Inspection:**
+ - Always plot raw, corrected, and normalized data to catch inconsistencies.

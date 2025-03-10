@@ -1,0 +1,45 @@
+---
+title: "Reproducible wet lab data analysis"
+author: "Anna"
+date: today
+format: html
+---
+
+# Welcome  
+
+This site provides example analysis workflows for commonly used assays in the biological wet lab. Originally created for my students, I’m sharing it here so others can benefit as well. It's a work in progress.
+
+Each section walks through the key steps of data analysis, from raw data to final results, highlighting important quality control measures and potential pitfalls.The focus is on understanding the logic of data analysis and providing a starting point that can be adapted to different experiments. The workflows are written in R, feel free to use and modify the code :) However, you should be able to follow and adapt, whether or not you use R.
+
+
+# General Steps
+
+* Inspect raw data & perform QC
+  - Is the data within the expected range?
+  - Are there any obvious outliers?
+  - *An empty well due to a pipetting mistake should be immediately visible*
+
+* Identify and handle outliers
+  - Do you have a valid reason to exclude a data point?
+  - Use lab notes or experimental context to justify exclusions.
+
+* Perform necessary preprocessing
+  - Background subtraction, normalisation
+  - Is it necessary for your data?
+  - Why and how should it be done?
+
+* Graph your data meaningfully
+  - Consider who your are showing your results to (colleague, final report, publication)
+  - Select a meaningful graph type that fits your data
+  - Make clear what you show: pipetting replicates vs. biological replicates, how many replicates?
+  - Axis labels, clear legends and annotations
+  
+* Statistical analysis: Are differences meaningful?
+  - Descriptive stats: Mean, standard deviation, confidence intervals
+  - Hypothesis testing: t-tests, ANOVA, non-parametric tests—which is appropriate?
+    - Multiple comparisons: If comparing many groups, adjust for false positives (e.g., Bonferroni, Tukey)
+
+
+## Available Pipelines  
+- **Colorimetric Data Analysis** (e.g., ELISA, MTT assays)  
+- **qPCR Analysis** (e.g., Ct values, normalization)  

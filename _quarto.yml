@@ -1,0 +1,19 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "Reproducible Data Analysis"
+  navbar:
+    left:
+      - href: index.qmd
+        text: "Home"
+      - href: colorimetric.qmd
+        text: "Colorimetric Data"
+      - href: qpcr.qmd
+        text: "qPCR Data"
+
+format:
+  html:
+    theme: cosmo
+    toc: true
