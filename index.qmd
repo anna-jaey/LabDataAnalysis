@@ -41,5 +41,5 @@ Each section walks through the key steps of data analysis, from raw data to fina
 
 
 ## Available Pipelines  
-- **Colorimetric Data Analysis** (e.g., ELISA, MTT assays)  
-- **qPCR Analysis** (e.g., Ct values, normalization)  
+- **Colorimetric Data Analysis** (e.g., ELISA, MTT, CCK-8 assays)  
+- **qPCR Analysis** (e.g., Ct values, normalisation)  

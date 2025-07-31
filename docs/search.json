@@ -11,14 +11,14 @@
     "href": "index.html#available-pipelines",
     "title": "Wet lab data analysis",
     "section": "Available Pipelines",
-    "text": "Available Pipelines\n\nColorimetric Data Analysis (e.g., ELISA, MTT assays)\n\nqPCR Analysis (e.g., Ct values, normalization)"
+    "text": "Available Pipelines\n\nColorimetric Data Analysis (e.g., ELISA, MTT, CCK-8 assays)\n\nqPCR Analysis (e.g., Ct values, normalisation)"
   },
   {
     "objectID": "qPCR.html",
     "href": "qPCR.html",
     "title": "qPCR Data Analysis",
     "section": "",
-    "text": "qPCR\n[in progress]"
+    "text": "qPCR\nin progress"
   },
   {
     "objectID": "colourimetric.html",
@@ -82,5 +82,12 @@
     "title": "Colourimetric Data Analysis",
     "section": "",
     "text": "Raw data\n\nDoes it fall within expected range of the assay (linear range)?\nAre there outliers? - If yes, deal with them appropriately.\n\nIs blank subtraction necessary?\n\nIt depends.\nIf in doubt, try both.\n\nNormalisation choice:\n\nAlways normalise to a control that is expected to remain stable.\nNormalisation should reduce systematic technical noise while maintaining the true biological differences between groups.\n\nVisual Inspection:\nAlways plot raw, corrected, and normalized data to catch inconsistencies."
+  },
+  {
+    "objectID": "docs/qpcr.html",
+    "href": "docs/qpcr.html",
+    "title": "qPCR Data Analysis",
+    "section": "",
+    "text": "qPCR\n[in progress]"
   }
 ]
