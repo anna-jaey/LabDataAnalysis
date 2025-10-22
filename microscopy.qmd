@@ -27,6 +27,7 @@ format: html
 ### **1. Signal-to-Noise Ratio (SNR)**
 
 Before you adjust any settings, you need to understand the fundamental quality metric of your image: the Signal-to-Noise Ratio (SNR).
+
 *   **Signal:** The actual, specific light emitted from your fluorophore that you are interested in. This is the biological information you want to capture.
 *   **Noise:** All the random, unwanted variations in pixel intensity that obscure your signal. This includes:
     *   **Shot noise:** The inherent statistical variation in photon arrival, even from a constant light source.
