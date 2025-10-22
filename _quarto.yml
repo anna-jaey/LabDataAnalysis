@@ -8,6 +8,8 @@ website:
     left:
       - href: index.qmd
         text: "Home"
+      - href: microscopy.qmd
+        text: "Microscopy"
       - href: colourimetric.qmd
         text: "Colorimetric Data"
       - href: qPCR.qmd

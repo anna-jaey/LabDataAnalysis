@@ -1,0 +1,155 @@
+---
+title: "Microscopy Data Analysis"
+format: html
+---
+
+# **Imaging for Immunofluorescence (IF): the essentials**
+
+**Goal:**
+
+*   acquire *publishable images* where the signal you see actually represents the biology you're studying, not an artefact of bad microscope settings.
+*   acquire *images that are suitable for image analysis and quantification*
+
+**Prerequisite:** You MUST understand what a digital image is. If you don't know that an image is a grid of pixels and that each pixel has an intensity value (e.g., 0-4095 for a 12-bit image), visit the
+
+*   [ZEISS Webinar on Image Analysis Basics and Practice](https://www.zeiss.com/microscopy/en/resources/insights-hub/life-sciences/image-analysis-basics-and-practice.html){target="_blank"}
+*   [IMB's Introduction to Image Processing](https://www.youtube.com/watch?v=5tFz5z88JzY){target="_blank"}
+
+---
+
+**The First Two Rules of Microscopy:**
+
+* Unless you understand what a digital image is, the different image types and what a histogram, there is no point in you starting microscopy.
+* Your image quality is fundamentally limited by your sample. **A garbage stain will give you a garbage image, which will lead to garbage quantification.** No amount of microscope expertise can save a poorly prepared or non-optimised sample. 
+
+---
+
+### **1. Signal-to-Noise Ratio (SNR)**
+
+Before you adjust any settings, you need to understand the fundamental quality metric of your image: the Signal-to-Noise Ratio (SNR).
+*   **Signal:** The actual, specific light emitted from your fluorophore that you are interested in. This is the biological information you want to capture.
+*   **Noise:** All the random, unwanted variations in pixel intensity that obscure your signal. This includes:
+    *   **Shot noise:** The inherent statistical variation in photon arrival, even from a constant light source.
+    *   **Read noise:** Electronic noise introduced by the camera sensor when it converts photons into a digital signal.
+    *   **Background:** This includes autofluorescence from the sample, non-specific antibody binding, and stray light. It acts as noise that drowns out the specific signal.
+*   **SNR:** The ratio of your true signal to the total noise. **A higher SNR means a cleaner, more trustworthy, and quantifiable image.**
+
+#### **What does it mean in an image?**
+*   **High SNR:** Image looks crisp and clean. Features are distinct from the background. You can be confident that bright pixels are real signal and you can accurately measure intensities and shapes.
+*   **Low SNR:** Image looks "grainy" or "fuzzy." It's hard to tell where the real signal ends and the noise begins. **Any quantification from a low-SNR image is garbage.** You cannot reliably measure what you cannot clearly distinguish from background.
+
+#### **Easy way to find it out while at the microscope (The Snapshot Method)**
+This is a quick, qualitative check you can do during acquisition to assess your image health.
+
+1.  **Take a 'snapshot':** Acquire an image with your current settings. On the MICA, this is the "Snapshot" button. In other software, it might be "Acquire," "Preview,". You may potentially also be able to see the intensities in "Live."
+2.  **Inspect the image:** Open the snapshot in the microscope's results viewer, Fiji, or any software that lets you inspect pixel intensity values (in Arbitrary Units, AU).
+3.  **Find your background:**
+    *   **Area background:** Move your field of view to an area with no cells. Look at the pixel intensities. This is your baseline **Background Noise**. It should be low and relatively uniform.
+    *   **Cellular background (better):** Move to a cell that should not have your specific stain (e.g., a DAPI-only channel, or a cell type known to be negative). The intensity here represents your sample's autofluorescence and non-specific background. **This is the most relevant background for SNR.**
+4.  **Find your signal:** Look at the pixel intensity values in a brightly stained feature and in a dimmer one.
+5.  **Assess mentally:**
+    *   **Good SNR:** The intensity of your stained feature is *much* higher than the cellular background, and the background itself looks smooth, not speckly.
+    *   **Bad SNR:** The stained feature isn't much brighter than the speckly variations in the background. You have to squint to decide if something is real.
+    
+**A rule of thumb:** On an 8-bit scale (0-255), aim for a background intensity in the range of **~10-50 AU** and a clear signal well above that, ideally in the **~100-200 AU** range for your features of interest. This provides a good dynamic range for quantification while avoiding a background that is too high or a signal that is saturated. This might not always be totally true but gives you a starting point.
+
+#### **SNR of Intense vs. Weak Stains**
+*   **Intensely Stained Features:** Easy. The strong signal makes achieving a high SNR straightforward. The primary danger is **saturation**, where your signal is so intense it maxes out the camera's dynamic range, destroying information.
+*   **Weakly Stained Features:** This is the real challenge. The signal is low and easily drowned out by noise. To improve SNR for weak stains, you must:
+    *   **Increase signal:** Use longer exposure time or higher laser power.
+    *   **Reduce noise:** Use camera binning or frame averaging (at the cost of resolution or speed).
+    *   **Always check your controls:** When you change settings to see a weak stain, you also amplify everything else. **You MUST check your negative control with these new, higher settings.** If your negative control starts to look bright and speckly, your "signal" is likely just amplified background noise, and your experiment is not specific.
+
+---
+
+### **2. Resolution and Magnification**
+
+Do not confuse magnification ("making things bigger") with resolution ("seeing things clearly"). **Resolution is the ability to distinguish two close objects as separate.** While magnification enlarges an image, ultimate resolution is determined by your objective lens and the physics of light (Abbe's Law).
+
+*   **Empty magnification** (e.g., digitally zooming a low-resolution image) does not reveal new detail.
+*   **A practical check:** A feature must span multiple pixels to be quantified. If you are imaging a fiber that is 200 nm thick and your pixel size is 150 nm, the fiber will only be ~1.3 pixels wide, making accurate measurement impossible. Choose your objective and camera settings so your structures are adequately sampled across several pixels.
+
+---
+
+### **3. Setting Imaging Settings - Controls cannot be avoided**
+
+You cannot set your imaging parameters in a vacuum. You need controls to define the boundaries of your settings for quantification.
+
+#### **The Positive Control**
+*   **What it is:** A sample where you are certain your target is strongly expressed and stained well. This confirms your staining protocol worked.
+*   **How to use it for imaging:** The positive control helps you establish a reasonable intensity range, but **it may not always set the final upper limit** for your experiment. Use it to verify your staining worked and to get in the right exposure ballpark.
+*   **Setting the actual upper limit:** You must use the **brightest sample in your experimental series** to determine your final imaging settings. For example:
+    *   If your *in vitro* cells have much fainter collagen staining than your tissue positive control, use the brightest *in vitro* sample to avoid underexposing your actual data.
+    *   If an experimental group is brighter than your positive control, use that group instead.
+*   **The key principle:** Your imaging settings must ensure that **the brightest pixel across ALL samples you plan to compare** is below saturation. Always check your brightest experimental sample, not just the control. But don't skip the positive control either, especially when working with new antibodies or protocols.
+
+#### **The Negative Control**
+*   **What it is:** A sample to define your background. There are different types of negative controls:
+    *   **Biological Negative:** A sample (e.g., a KO, treated, or wild-type cell) known *not* to express the target. This is the gold standard as it accounts for autofluorescence and non-specific binding in your specific biological context. 
+    *   **No Primary Control:** A sample processed without the primary antibody. This controls for non-specific binding of your secondary antibody.
+    *   **Isotype Control:** A sample incubated with a non-specific antibody of the same *isotype* as your primary. This controls for non-specific Fc receptor binding.
+    * **Real world**: In many labs, resource or experimental constraints mean that a full suite of controls for every experiment isn't always feasible. You might use either a "no primary" or an "isotype" control. While this is common practice, it's important to understand that each control answers a slightly different question, and their limitations should be acknowledged when interpreting your data. The goal is to use the most appropriate control available to you to confidently distinguish specific signal from background. Moreover, for the biological controls, you may often worked with mixed populations, where you have negative and positive cells in one sample.
+*   **How to use it:** Image the negative control with the *exact same settings* you defined using your positive/experimental samples.
+*   **How it should look:** It should be dark. You might see faint, diffuse cell outlines (autofluorescence), but there should be **no specific staining pattern** that resembles your real signal. If you see specific-looking speckles or structures, your staining is not specific, and your data is not trustworthy.
+
+**The Workflow:** Set exposure on your brightest sample (pos ctrl/brightest experimental group) to avoid saturation. -> Use the Negative Control to verify your signal is specific above background and you didn't introduce artefacts by increasing the light for a faint staining. -> Apply those *exact same settings* to all experimental samples
+
+---
+
+### **4. Using the Histogram**
+
+The histogram is the most helpful too! It is a graph showing the number of pixels at each intensity value in your image.
+
+Of course. Here is the revised "Using the Histogram" section with your edits and a clear explanation of the "real world" scenario.
+
+---
+
+### **4. Using the Histogram**
+
+The histogram is the most helpful tool! It is a graph showing the number of pixels at each intensity value in your image.
+
+* **Left side of graph:** Dark pixels (background, black).
+* **Right side of graph:** Bright pixels (signal, white).
+* **Ideal image:**
+    *  A sharp, narrow peak on the far left (your background).
+    *  A separate peak or a shoulder further to the right (your specific signal).
+    *  A clear valley between them, indicating good contrast and SNR.
+*  **Saturation:** A huge spike slammed against the far right wall. This means signal is clipped and data is lost forever. **BAD.**
+*  **Low SNR:** One single thing peak, background and signal blends directly into each other. The image is noisy. **BAD.**
+*  **"Flashlight in a Fog":** The entire histogram is shifted to the right. The background is too bright, killing your contrast. **BAD.**
+*   **The Real World:** You will often not get two perfect, separate hills, especially with weak signals. In this case, you will see a single peak that is **stretched to the right**.
+    *   **A narrow peak** that is centered means your background is low and your signal is also low/absent.
+    *   **A broad, right-skewed peak** means your signal is present and shifting the pixel intensities to higher values. The broader and more right-shifted this peak is (without hitting the right wall), the stronger your signal and the better your dynamic range. The key is that the **leftmost part of the peak should still be close to 0**, indicating a dark background.
+
+---
+
+### **5. Auto Range vs. Full Range (Viewing Lookup Tables - LUTs)**
+
+This is a **CRITICAL** distinction. **LUTs change how you SEE the image on screen, but they do NOT change the actual acquired data.** You can always change the display later, but you cannot recover data lost to bad acquisition settings.
+
+*   **Auto Range (or Scaled):** The software automatically stretches the histogram to fill the entire display range. It makes the darkest pixel in your current field of view black and the brightest pixel white.
+    *   **Use:** Excellent for **finding your sample** quickly.
+    *   **Danger:** It makes *almost every* image look like it has perfect contrast, hiding serious problems. A dim, noisy image may look fine. However, it can also dramatically blow up a few background pixels, making a clean sample look noisy. **Do not use Auto Range to set your exposure or assess image quality.**
+
+*   **Full / Absolute / Manual Range:** The display is locked to the full bit-depth of your camera (e.g., 0-4095). What you see is a direct representation of your data.
+    *   **Use:** **This is the mode you should use for setting exposure and acquiring data.**
+    *   **Why:** It allows you to see the true histogram. You can instantly spot if your background is too high (histogram shifted right) or if your signal is saturated (pixels piling up at the max value).
+
+**The workflow:**
+1.  **FIND YOUR SAMPLE** using Auto Range.
+2.  **SWITCH TO MANUAL/ABSOLUTE RANGE.**
+3.  **SET YOUR EXPOSURE** by adjusting laser power/exposure time while watching the histogram in the Absolute Range view. Aim for a background peak near 0 and a signal that does not touch the right wall.
+
+You can always apply a LUT later for a presentation figure, but you can never un-saturate an image or recover lost dynamic range.
+
+### **Summary: A Basic Imaging Checklist**
+
+1.  **[ ] Understand your image:** Bit-depth, pixels, etc.
+2.  **[ ] Use controls:** Set exposure on your Positive Control to avoid saturation. Confirm low background with your Negative Control.
+3.  **[ ] Check the Histogram:** Look for saturation and a clean background peak near 0.
+4.  **[ ] View in Absolute/Manual Range** when setting acquisition settings. Never trust Auto Range for quantification.
+5.  **[ ] Assess SNR:** Take a mental snapshot of background vs. signal. If it's grainy, figure out why before proceeding.
+
+**Further Reading:**
+*   [Microscopy Online Resources - IMB, UQ](https://imb.uq.edu.au/research/facilities/microscopy/training-manuals/microscopy-online-resources/image-analysis){target="_blank"}
+*   [ZEISS Image Analysis Basics and Practice](https://www.zeiss.com/microscopy/en/resources/insights-hub/life-sciences/image-analysis-basics-and-practice.html){target="_blank"}

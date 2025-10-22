@@ -38,8 +38,3 @@ Each section walks through the key steps of data analysis, from raw data to fina
   - Descriptive stats: Mean, standard deviation, confidence intervals
   - Hypothesis testing: t-tests, ANOVA, non-parametric tests—which is appropriate?
     - Multiple comparisons: If comparing many groups, adjust for false positives (e.g., Bonferroni, Tukey)
-
-
-## Available Pipelines  
-- **Colorimetric Data Analysis** (e.g., ELISA, MTT, CCK-8 assays)  
-- **qPCR Analysis** (e.g., Ct values, normalisation)  
